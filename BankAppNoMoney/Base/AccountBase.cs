@@ -22,6 +22,7 @@ internal abstract class AccountBase
             }
         }
     }
+
     internal string AccountName { get; set; } = "";
     internal string AccountNumber { get; set; } = "";
     internal decimal InterestRate { get; set; } = 0;
