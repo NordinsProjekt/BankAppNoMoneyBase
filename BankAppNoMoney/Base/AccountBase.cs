@@ -29,6 +29,16 @@ internal abstract class AccountBase
 
     protected List<BankTransaction> bankTransactions = new List<BankTransaction>();
 
+    internal AccountBase() { }
+
+    internal AccountBase(string accountName, string accountNumber, decimal startingBalance, decimal interestRate)
+    {
+        AccountName = accountName;
+        AccountNumber = accountNumber;
+        StartingBalance = startingBalance;
+        InterestRate = interestRate;
+    }
+
     internal abstract decimal Balance();
 
     internal virtual void Deposit(decimal amount)

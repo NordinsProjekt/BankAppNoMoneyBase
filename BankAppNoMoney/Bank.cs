@@ -1,17 +1,13 @@
-﻿using BankAppNoMoney.Base;
+﻿using BankAppNoMoney.Accounts;
+using BankAppNoMoney.Base;
 
 namespace BankAppNoMoney;
 
 internal class Bank
 {
     private List<AccountBase> accounts = new List<AccountBase>();
-    private BankMenu bankMenu = new BankMenu("Bank Menu", new string[]
-    {
-        "Add account",
-        "Remove account",
-        "Show accounts",
-        "Exit"
-    });
+    private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Exit"]);
+    private AccountMenu accountMenu = new("Account Menu", ["Bank account", "ISK account", "Uddevalla account"]);
 
     internal void AddAccount(AccountBase account)
     {
@@ -38,7 +34,8 @@ internal class Bank
         switch (selectedOption)
         {
             case 0:
-
+                var choice = accountMenu.ShowMenu();
+                AddAccount(CreateAccount(choice));
                 break;
             case 1:
                 Console.WriteLine("Remove account selected");
@@ -56,12 +53,13 @@ internal class Bank
 
     private AccountBase CreateAccount(int selectedoption)
     {
-        while (true)
-        {
-
-        }
-
         Console.Clear();
+        Console.Write("Namn på kontot: ");
+        var accountName = Console.ReadLine();
+
+        Console.Write("Kontonummer: ");
+        var accountNumber = Console.ReadLine();
+
         Console.Write("Hur mycket ska kontot startas med?: ");
         _ = decimal.TryParse(Console.ReadLine(), out decimal initialAmount);
 
@@ -70,10 +68,15 @@ internal class Bank
 
         var bankAccountName = Console.ReadLine();
 
-        account.AccountName = bankAccountName;
-        account.InterestRate = initialInterest;
-
-
-
-        if (decimal.TryParse(Console.ReadLine(), out decimal initialInterest))
+        switch (selectedoption)
+        {
+            case 0:
+                return new BankAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+            case 1:
+                return new IskAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+            case 2:
+                return new UddevallaAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+            default: throw new NotImplementedException();
+        }
     }
+}

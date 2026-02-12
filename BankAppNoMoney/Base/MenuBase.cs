@@ -1,4 +1,6 @@
-﻿namespace BankAppNoMoney.Base;
+﻿using BankAppNoMoney.Extensions;
+
+namespace BankAppNoMoney.Base;
 
 internal abstract class MenuBase
 {
@@ -32,31 +34,17 @@ internal abstract class MenuBase
             {
                 if (i == selectedOption)
                 {
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
                 }
                 Console.Write(options[i] + "\n");
+                Console.ResetColor();
             }
 
             var input = Console.ReadKey(true);
-            switch (input.Key)
-            {
-                case ConsoleKey.UpArrow:
-                    if (--selectedOption < 0)
-                    {
-                        selectedOption = options.Length - 1;
-                    }
-                    break;
-                case ConsoleKey.DownArrow:
-                    if (++selectedOption >= options.Length)
-                    {
-                        selectedOption = 0;
-                    }
-                    break;
-                case ConsoleKey.Enter:
-                    return selectedOption;
-                default: break;
-            }
+            if (input.Key == ConsoleKey.Enter)
+                return selectedOption;
+            else
+                selectedOption = input.GetNewSelectionIndex(selectedOption, GetOptionsLength());
         }
     }
 }
