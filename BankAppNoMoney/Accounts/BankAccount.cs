@@ -8,7 +8,7 @@ internal class BankAccount : AccountBase
     {
     }
 
-    public BankAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate) : base(accountName, accountNumber, startingBalance, interestRate)
+    public BankAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate = 1.0m) : base(accountName, accountNumber, startingBalance, interestRate)
     {
     }
 

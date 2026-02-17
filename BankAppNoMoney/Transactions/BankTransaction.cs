@@ -1,4 +1,4 @@
-﻿namespace BankAppNoMoney;
+﻿namespace BankAppNoMoney.Transactions;
 
 internal class BankTransaction
 {

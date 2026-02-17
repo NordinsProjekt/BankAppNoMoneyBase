@@ -8,7 +8,7 @@ internal class UddevallaAccount : AccountBase
     {
     }
 
-    public UddevallaAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate) : base(accountName, accountNumber, startingBalance, interestRate)
+    public UddevallaAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate = 3.0m) : base(accountName, accountNumber, startingBalance, interestRate)
     {
     }
 

@@ -1,13 +1,19 @@
 ﻿using BankAppNoMoney.Accounts;
 using BankAppNoMoney.Base;
+using BankAppNoMoney.Menu;
 
 namespace BankAppNoMoney;
 
 internal class Bank
 {
     private List<AccountBase> accounts = new List<AccountBase>();
-    private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Exit"]);
+    private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Select account", "Exit"]);
     private AccountMenu accountMenu = new("Account Menu", ["Bank account", "ISK account", "Uddevalla account"]);
+
+    internal Bank()
+    {
+        accounts = SeedDataService.GenerateAccounts();
+    }
 
     internal void AddAccount(AccountBase account)
     {
@@ -30,25 +36,56 @@ internal class Bank
 
     internal void ShowBankMenu()
     {
-        var selectedOption = bankMenu.ShowMenu();
-        switch (selectedOption)
+        while (true)
         {
-            case 0:
-                var choice = accountMenu.ShowMenu();
-                AddAccount(CreateAccount(choice));
-                break;
-            case 1:
-                Console.WriteLine("Remove account selected");
-                break;
-            case 2:
-                Console.WriteLine("Show accounts selected");
-                break;
-            case 3:
-                Console.WriteLine("Exit selected");
-                return;
-            default:
-                break;
+            var selectedOption = bankMenu.ShowMenu();
+            var choice = 0;
+            switch (selectedOption)
+            {
+                case 0:
+                    choice = accountMenu.ShowMenu();
+                    AddAccount(CreateAccount(choice));
+                    break;
+                case 1:
+                    {
+                        choice = new GenericAccountMenu("Delete account", GetAccountMenuStrings().ToArray()).ShowMenu();
+                        var account = accounts.Skip(choice).First();
+                        RemoveAccount(account.Id);
+                        break;
+                    }
+                case 2:
+                    DisplayService.ShowAsTable("..:: Show accounts ::..", accounts);
+                    Console.WriteLine("Press a key to continue");
+                    Console.ReadKey();
+
+                    break;
+                case 3:
+                    {
+                        choice = new GenericAccountMenu("Select account", GetAccountMenuStrings().ToArray()).ShowMenu();
+                        var account = accounts.Skip(choice).First();
+                        ShowAccountDetails(account.Id);
+                        break;
+                    }
+                case 4:
+                default:
+                    Environment.Exit(0);
+                    break;
+            }
         }
+    }
+
+    private void ShowAccountDetails(Guid id)
+    {
+        var account = accounts.First(a => a.Id == id);
+        DisplayService.ShowAccountDetails(account);
+        account.ShowMenu(true);
+        Console.WriteLine("Press a key to continue");
+        Console.ReadKey();
+    }
+
+    private List<string> GetAccountMenuStrings()
+    {
+        return accounts.Select(x => new string(x.AccountName + " " + x.AccountNumber)).ToList();
     }
 
     private AccountBase CreateAccount(int selectedoption)
@@ -61,21 +98,18 @@ internal class Bank
         var accountNumber = Console.ReadLine();
 
         Console.Write("Hur mycket ska kontot startas med?: ");
-        _ = decimal.TryParse(Console.ReadLine(), out decimal initialAmount);
-
-        Console.Write("Vilken ränta ska kontot ha?: ");
-        _ = decimal.TryParse(Console.ReadLine(), out decimal initialInterest);
+        var validatedAmount = decimal.TryParse(Console.ReadLine(), out decimal initialAmount);
 
         var bankAccountName = Console.ReadLine();
 
         switch (selectedoption)
         {
             case 0:
-                return new BankAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+                return new BankAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
             case 1:
-                return new IskAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+                return new IskAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
             case 2:
-                return new UddevallaAccount(accountName ?? "", accountNumber ?? "", initialAmount, initialInterest);
+                return new UddevallaAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
             default: throw new NotImplementedException();
         }
     }

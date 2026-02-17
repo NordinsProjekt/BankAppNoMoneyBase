@@ -1,6 +1,6 @@
 ﻿using BankAppNoMoney.Base;
 
-namespace BankAppNoMoney;
+namespace BankAppNoMoney.Menu;
 
 internal class BankMenu : MenuBase
 {

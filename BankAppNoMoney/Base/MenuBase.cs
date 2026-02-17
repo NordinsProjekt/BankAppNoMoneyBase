@@ -24,11 +24,18 @@ internal abstract class MenuBase
         return options.ToArray();
     }
 
-    internal virtual int ShowMenu()
+    internal virtual int ShowMenu(bool usePosition = false)
     {
+        var cursorTop = Console.CursorTop + 1;
         while (true)
         {
-            Console.Clear();
+            if (!usePosition)
+            {
+                Console.Clear();
+                cursorTop = 0;
+            }
+
+            Console.SetCursorPosition(0, cursorTop);
             Console.WriteLine($"..:: {title} ::..");
             for (int i = 0; i < options.Length; i++)
             {
