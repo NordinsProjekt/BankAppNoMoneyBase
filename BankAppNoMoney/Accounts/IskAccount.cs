@@ -9,7 +9,8 @@ internal class IskAccount : AccountBase
     {
     }
 
-    public IskAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate = 0.5m) : base(accountName, accountNumber, startingBalance, interestRate)
+    public IskAccount(string accountName, string accountNumber, decimal startingBalance, decimal interestRate = 0.5m)
+        : base(accountName, accountNumber, startingBalance, interestRate)
     {
     }
 

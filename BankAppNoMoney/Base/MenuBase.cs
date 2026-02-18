@@ -19,11 +19,6 @@ internal abstract class MenuBase
         return options.Length;
     }
 
-    internal string[] GetOptions()
-    {
-        return options.ToArray();
-    }
-
     internal virtual int ShowMenu(bool usePosition = false)
     {
         var cursorTop = Console.CursorTop + 1;
