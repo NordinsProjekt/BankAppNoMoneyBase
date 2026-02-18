@@ -83,59 +83,87 @@ internal static class DisplayService
     private static void ShowIskAccountDetails(IskAccount iskAccount)
     {
         decimal cashBalance = iskAccount.GetCashBalance();
-        decimal stockBalance = 0;
-        decimal mutualFundBalance = 0;
-
-        Console.WriteLine("BALANCE BREAKDOWN:");
-        Console.WriteLine("───────────────────────────────────────────────────────");
-        Console.WriteLine($"Cash Balance:     {cashBalance,15:C2}");
-        Console.WriteLine();
+        decimal totalBalance = iskAccount.Balance();
 
         var securityTransactions = iskAccount.GetSecurityTransactions();
+        var stockTransactions = securityTransactions?.OfType<StockTransaction>().ToList() ?? [];
+        var mutualFundTransactions = securityTransactions?.OfType<MutualFundTransaction>().ToList() ?? [];
 
-        if (securityTransactions != null && securityTransactions.Count > 0)
+        // Pre-calculate values
+        var stockValues = stockTransactions.Select(tx => tx.GetCurrentValue(tx.PurchasePrice)).ToList();
+        var fundValues = mutualFundTransactions.Select(tx => tx.GetCurrentValue(tx.PurchasePrice)).ToList();
+
+        decimal stockBalance = stockValues.Sum();
+        decimal mutualFundBalance = fundValues.Sum();
+
+        // Calculate dynamic label width
+        var labels = new List<string> { "Cash Balance:", "TOTAL BALANCE:" };
+        if (stockTransactions.Count > 0)
+            labels.AddRange(["  Quantity:", "  Purchase Price:", "  Current Value:", "Total Stocks:"]);
+        if (mutualFundTransactions.Count > 0)
+            labels.AddRange(["  Quantity:", "  Purchase Price:", "  Current Value:", "Total Mutual Funds:"]);
+
+        int labelWidth = labels.Max(l => l.Length) + 2;
+
+        // Calculate dynamic value width
+        var formattedValues = new List<string> { cashBalance.ToString("C2"), totalBalance.ToString("C2") };
+        if (stockTransactions.Count > 0)
         {
-            // Display Stocks
-            var stockTransactions = securityTransactions.OfType<StockTransaction>().ToList();
-            if (stockTransactions.Count > 0)
-            {
-                Console.WriteLine("STOCKS:");
-                foreach (var stockTx in stockTransactions)
-                {
-                    decimal value = stockTx.GetCurrentValue(stockTx.PurchasePrice);
-                    stockBalance += value;
-                    Console.WriteLine($"    Quantity:       {stockTx.Quantity,10}");
-                    Console.WriteLine($"    Purchase Price: {stockTx.PurchasePrice,10:C2}");
-                    Console.WriteLine($"    Current Value:  {value,10:C2}");
-                    Console.WriteLine();
-                }
-                Console.WriteLine($"Total Stocks:     {stockBalance,15:C2}");
-                Console.WriteLine();
-            }
-
-            // Display Mutual Funds
-            var mutualFundTransactions = securityTransactions.OfType<MutualFundTransaction>().ToList();
-            if (mutualFundTransactions.Count > 0)
-            {
-                Console.WriteLine("MUTUAL FUNDS:");
-                foreach (var fundTx in mutualFundTransactions)
-                {
-                    decimal value = fundTx.GetCurrentValue(fundTx.PurchasePrice);
-                    mutualFundBalance += value;
-                    Console.WriteLine($"    Quantity:       {fundTx.Quantity,10}");
-                    Console.WriteLine($"    Purchase Price: {fundTx.PurchasePrice,10:C2}");
-                    Console.WriteLine($"    Current Value:  {value,10:C2}");
-                    Console.WriteLine();
-                }
-                Console.WriteLine($"Total Mutual Funds: {mutualFundBalance,13:C2}");
-                Console.WriteLine();
-            }
+            formattedValues.Add(stockBalance.ToString("C2"));
+            formattedValues.AddRange(stockTransactions.Select(tx => tx.Quantity.ToString()));
+            formattedValues.AddRange(stockTransactions.Select(tx => tx.PurchasePrice.ToString("C2")));
+            formattedValues.AddRange(stockValues.Select(v => v.ToString("C2")));
+        }
+        if (mutualFundTransactions.Count > 0)
+        {
+            formattedValues.Add(mutualFundBalance.ToString("C2"));
+            formattedValues.AddRange(mutualFundTransactions.Select(tx => tx.Quantity.ToString()));
+            formattedValues.AddRange(mutualFundTransactions.Select(tx => tx.PurchasePrice.ToString("C2")));
+            formattedValues.AddRange(fundValues.Select(v => v.ToString("C2")));
         }
 
-        // Display total
-        decimal totalBalance = iskAccount.Balance();
-        Console.WriteLine("═══════════════════════════════════════════════════════");
-        Console.WriteLine($"TOTAL BALANCE:    {totalBalance,15:C2}");
-        Console.WriteLine("═══════════════════════════════════════════════════════");
+        int valueWidth = formattedValues.Max(v => v.Length) + 2;
+
+        string lightSeparator = new string('─', labelWidth + valueWidth);
+        string heavySeparator = new string('═', labelWidth + valueWidth);
+
+        Console.WriteLine("BALANCE BREAKDOWN:");
+        Console.WriteLine(lightSeparator);
+        Console.WriteLine($"{"Cash Balance:".PadRight(labelWidth)}{cashBalance.ToString("C2").PadLeft(valueWidth)}");
+        Console.WriteLine();
+
+        if (stockTransactions.Count > 0)
+        {
+            Console.WriteLine("STOCKS:");
+            for (int i = 0; i < stockTransactions.Count; i++)
+            {
+                var stockTx = stockTransactions[i];
+                Console.WriteLine($"{"  Quantity:".PadRight(labelWidth)}{stockTx.Quantity.ToString().PadLeft(valueWidth)}");
+                Console.WriteLine($"{"  Purchase Price:".PadRight(labelWidth)}{stockTx.PurchasePrice.ToString("C2").PadLeft(valueWidth)}");
+                Console.WriteLine($"{"  Current Value:".PadRight(labelWidth)}{stockValues[i].ToString("C2").PadLeft(valueWidth)}");
+                Console.WriteLine();
+            }
+            Console.WriteLine($"{"Total Stocks:".PadRight(labelWidth)}{stockBalance.ToString("C2").PadLeft(valueWidth)}");
+            Console.WriteLine();
+        }
+
+        if (mutualFundTransactions.Count > 0)
+        {
+            Console.WriteLine("MUTUAL FUNDS:");
+            for (int i = 0; i < mutualFundTransactions.Count; i++)
+            {
+                var fundTx = mutualFundTransactions[i];
+                Console.WriteLine($"{"  Quantity:".PadRight(labelWidth)}{fundTx.Quantity.ToString().PadLeft(valueWidth)}");
+                Console.WriteLine($"{"  Purchase Price:".PadRight(labelWidth)}{fundTx.PurchasePrice.ToString("C2").PadLeft(valueWidth)}");
+                Console.WriteLine($"{"  Current Value:".PadRight(labelWidth)}{fundValues[i].ToString("C2").PadLeft(valueWidth)}");
+                Console.WriteLine();
+            }
+            Console.WriteLine($"{"Total Mutual Funds:".PadRight(labelWidth)}{mutualFundBalance.ToString("C2").PadLeft(valueWidth)}");
+            Console.WriteLine();
+        }
+
+        Console.WriteLine(heavySeparator);
+        Console.WriteLine($"{"TOTAL BALANCE:".PadRight(labelWidth)}{totalBalance.ToString("C2").PadLeft(valueWidth)}");
+        Console.WriteLine(heavySeparator);
     }
 }

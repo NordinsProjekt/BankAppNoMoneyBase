@@ -5,9 +5,10 @@ namespace BankAppNoMoney.Base;
 
 internal abstract class AccountBase
 {
-    protected GenericAccountMenu menu = new("Account functions", ["Deposit", "Withdraw"]);
+    protected GenericAccountMenu menu = new("Account functions", ["Deposit", "Withdraw", "Cancel"]);
     internal Guid Id { get; set; } = Guid.NewGuid();
     private decimal startingBalance = 0;
+
     protected decimal StartingBalance
     {
         get
@@ -47,30 +48,16 @@ internal abstract class AccountBase
 
     internal virtual void Deposit(decimal amount)
     {
-        var t = new BankTransaction
-        {
-            Amount = amount,
-            TransactionalDate = DateTime.Now
-        };
-        bankTransactions.Add(t);
+        if (!ValidateDepositInput(amount)) return;
+
+        AddTransaction(amount);
     }
 
     internal virtual void Withdraw(decimal amount)
     {
-        var balance = Balance();
-        if (balance < amount)
-        {
-            Console.WriteLine("Not enough money to withdraw");
-            return;
-        }
+        if (!ValidateWithdrawInput(amount)) return;
 
-        var t = new BankTransaction
-        {
-            Amount = -amount,
-            TransactionalDate = DateTime.Now
-        };
-
-        bankTransactions.Add(t);
+        AddTransaction(-amount);
     }
 
     internal virtual void ShowMenu(bool useCursorPos = false)
@@ -95,6 +82,52 @@ internal abstract class AccountBase
 
                     break;
                 }
+            case 2: break;
         }
+    }
+
+    private bool ValidateDepositInput(decimal amount)
+    {
+        if (amount < 0)
+        {
+            Console.WriteLine("Deposit value cant be negative");
+            return false;
+        }
+
+        if (decimal.MaxValue < amount)
+        {
+            Console.WriteLine("Deposit value too big");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidateWithdrawInput(decimal amount)
+    {
+        if (Balance() <= amount)
+        {
+            Console.WriteLine("Not enough money to withdraw");
+            return false;
+        }
+
+        if (decimal.MaxValue < amount)
+        {
+            Console.WriteLine("Withdraw value too big");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void AddTransaction(decimal amount)
+    {
+        var t = new BankTransaction
+        {
+            Amount = amount,
+            TransactionalDate = DateTime.Now
+        };
+
+        bankTransactions.Add(t);
     }
 }

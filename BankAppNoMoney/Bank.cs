@@ -39,7 +39,7 @@ internal class Bank
         while (true)
         {
             var selectedOption = bankMenu.ShowMenu();
-            var choice = 0;
+            int choice;
             switch (selectedOption)
             {
                 case 0:
@@ -57,7 +57,6 @@ internal class Bank
                     DisplayService.ShowAsTable("..:: Show accounts ::..", accounts);
                     Console.WriteLine("Press a key to continue");
                     Console.ReadKey();
-
                     break;
                 case 3:
                     {
@@ -100,17 +99,12 @@ internal class Bank
         Console.Write("Hur mycket ska kontot startas med?: ");
         var validatedAmount = decimal.TryParse(Console.ReadLine(), out decimal initialAmount);
 
-        var bankAccountName = Console.ReadLine();
-
-        switch (selectedoption)
+        return selectedoption switch
         {
-            case 0:
-                return new BankAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
-            case 1:
-                return new IskAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
-            case 2:
-                return new UddevallaAccount(accountName ?? "", accountNumber ?? "", validatedAmount ? initialAmount : 0m);
-            default: throw new NotImplementedException();
-        }
+            0 => new BankAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
+            1 => new IskAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
+            2 => new UddevallaAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
+            _ => throw new NotImplementedException(),
+        };
     }
 }
