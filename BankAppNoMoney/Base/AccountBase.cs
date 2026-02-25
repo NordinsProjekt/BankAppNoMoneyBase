@@ -46,11 +46,56 @@ internal abstract class AccountBase
 
     internal abstract decimal Balance();
 
-    internal virtual void Deposit(decimal amount)
+    internal virtual void Deposit(decimal amount, DateTime? dateTime = null)
     {
         if (!ValidateDepositInput(amount)) return;
 
-        AddTransaction(amount);
+        AddTransaction(amount, dateTime);
+    }
+
+    internal decimal CalculateInterestForTheYear(int year)
+    {
+        var validatedDate = DateTime.TryParse($"{year}-01-01", out DateTime parsedDate);
+        if (!validatedDate) return -1;
+
+        var balance = GetStartBalance(year);
+        var interestForAccount = 0m;
+
+        var yearTransactions = GetTransactionsByDay(year);
+        var tempDateTime = DateOnly.FromDateTime(parsedDate);
+
+        foreach (var transaction in yearTransactions)
+        {
+            var interval = transaction.Key.DayNumber - tempDateTime.DayNumber;
+            interestForAccount += CalculatePeriodInterest(balance, interval);
+            balance += transaction.Sum(x => x.Amount);
+            tempDateTime = transaction.Key;
+        }
+
+        var lastToEndOfYear = DateOnly.Parse($"{year}-12-31").DayNumber - tempDateTime.DayNumber + 1;
+        interestForAccount += CalculatePeriodInterest(balance, lastToEndOfYear);
+
+        return interestForAccount;
+    }
+
+    private decimal GetStartBalance(int year)
+    {
+        return StartingBalance + bankTransactions
+            .Where(x => x.TransactionalDate.Year < year)
+            .Sum(x => x.Amount);
+    }
+
+    private IEnumerable<IGrouping<DateOnly, BankTransaction>> GetTransactionsByDay(int year)
+    {
+        return bankTransactions
+        .Where(x => x.TransactionalDate.Year == year)
+        .OrderBy(x => x.TransactionalDate)
+        .GroupBy(x => DateOnly.FromDateTime(x.TransactionalDate));
+    }
+
+    private decimal CalculatePeriodInterest(decimal balance, int days)
+    {
+        return balance * (InterestRate / 100) / 365 * days;
     }
 
     internal virtual void Withdraw(decimal amount)
@@ -71,7 +116,6 @@ internal abstract class AccountBase
                     Console.Write("How much to deposit?: ");
                     var validatedAmount = decimal.TryParse(Console.ReadLine(), out decimal amount);
                     Deposit(validatedAmount ? amount : 0);
-
                     break;
                 }
             case 1:
@@ -79,7 +123,6 @@ internal abstract class AccountBase
                     Console.Write("How much to withdraw?: ");
                     var validatedAmount = decimal.TryParse(Console.ReadLine(), out decimal amount);
                     Withdraw(validatedAmount ? amount : 0);
-
                     break;
                 }
             case 2: break;
@@ -120,14 +163,14 @@ internal abstract class AccountBase
         return true;
     }
 
-    private void AddTransaction(decimal amount)
+    private void AddTransaction(decimal amount, DateTime? dateTime = null)
     {
-        var t = new BankTransaction
+        var transaction = new BankTransaction
         {
             Amount = amount,
-            TransactionalDate = DateTime.Now
+            TransactionalDate = dateTime ?? DateTime.Now
         };
 
-        bankTransactions.Add(t);
+        bankTransactions.Add(transaction);
     }
 }

@@ -30,6 +30,9 @@ internal static class SeedDataService
         bankAccount2.Deposit(1000m);
         bankAccount2.Withdraw(500m);
 
+        for (var i = 1; i <= 10; i++)
+            bankAccount1.Deposit(500, DateTime.Parse($"2025-{i}-01"));
+
         return [bankAccount1, bankAccount2];
     }
 

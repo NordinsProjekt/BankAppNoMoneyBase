@@ -12,7 +12,10 @@ internal class Bank
 
     internal Bank()
     {
+#if DEBUG
         accounts = SeedDataService.GenerateAccounts();
+#endif
+
     }
 
     internal void AddAccount(AccountBase account)

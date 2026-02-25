@@ -61,9 +61,10 @@ internal static class DisplayService
 
         // Display basic account information
         Console.WriteLine("═══════════════════════════════════════════════════════");
-        Console.WriteLine($"Account Name:     {account.AccountName}");
-        Console.WriteLine($"Account Number:   {account.AccountNumber}");
-        Console.WriteLine($"Interest Rate:    {account.InterestRate}%");
+        Console.WriteLine($"Account Name:      {account.AccountName}");
+        Console.WriteLine($"Account Number:    {account.AccountNumber}");
+        Console.WriteLine($"Interest Rate:     {account.InterestRate}%");
+        Console.WriteLine($"Interest for 2025: {account.CalculateInterestForTheYear(2025):C2}");
         Console.WriteLine("═══════════════════════════════════════════════════════");
         Console.WriteLine();
 
