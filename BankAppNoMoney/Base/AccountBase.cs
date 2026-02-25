@@ -61,7 +61,7 @@ internal abstract class AccountBase
         var balance = GetStartBalance(year);
         var interestForAccount = 0m;
 
-        var yearTransactions = GetTransactionsByDay(year);
+        var yearTransactions = GetYearTransactionsByDay(year);
         var tempDateTime = DateOnly.FromDateTime(parsedDate);
 
         foreach (var transaction in yearTransactions)
@@ -85,7 +85,7 @@ internal abstract class AccountBase
             .Sum(x => x.Amount);
     }
 
-    private IEnumerable<IGrouping<DateOnly, BankTransaction>> GetTransactionsByDay(int year)
+    private IEnumerable<IGrouping<DateOnly, BankTransaction>> GetYearTransactionsByDay(int year)
     {
         return bankTransactions
         .Where(x => x.TransactionalDate.Year == year)
