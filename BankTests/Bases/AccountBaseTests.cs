@@ -29,4 +29,30 @@ public class AccountBaseTests
 
         Assert.Equal(-1, result);
     }
+
+    [Theory]
+    [InlineData(0, 1, 2025, 100)]
+    public void AccountBase_CalculateInterestForTheYear_DepositYearBefore_ShouldReturnExpected(
+        decimal startingBalance, decimal interestRate, int year, decimal expected)
+    {
+        var account = new BankAccount("Test", "1234", startingBalance, interestRate);
+        account.Deposit(10000, DateTime.Parse("2024-04-30"));
+
+        var result = account.CalculateInterestForTheYear(year);
+
+        Assert.Equal(expected, Math.Round(result, 2));
+    }
+
+    [Theory]
+    [InlineData(10000, 1, 2025, 150)]
+    public void AccountBase_CalculateInterestForTheYear_DepositMiddleOfYear_ShouldReturnExpected(
+    decimal startingBalance, decimal interestRate, int year, decimal expected)
+    {
+        var account = new BankAccount("Test", "1234", startingBalance, interestRate);
+        account.Deposit(10000, DateTime.Parse($"{year}-01-01").AddDays(182));
+
+        var result = account.CalculateInterestForTheYear(year);
+
+        Assert.Equal(expected, Math.Round(result, 0));
+    }
 }
