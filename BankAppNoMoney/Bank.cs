@@ -15,7 +15,6 @@ internal class Bank
 #if DEBUG
         accounts = SeedDataService.GenerateAccounts();
 #endif
-
     }
 
     internal void AddAccount(AccountBase account)
