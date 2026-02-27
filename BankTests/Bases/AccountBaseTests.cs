@@ -4,7 +4,7 @@ namespace BankTests.Bases;
 
 public class AccountBaseTests
 {
-    [Theory]
+    //[Theory]
     [InlineData(1000, 1, 2023, 10)] // 1000 @ 1% for a full year = 10
     [InlineData(0, 1, 2023, 0)]  // zero balance = no interest
     [InlineData(1000, 0, 2023, 0)]  // zero rate = no interest

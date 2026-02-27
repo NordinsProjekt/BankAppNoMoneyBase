@@ -18,4 +18,9 @@ internal class UddevallaAccount : AccountBase
         var t = bankTransactions.Sum(x => x.Amount);
         return t + StartingBalance;
     }
+
+    internal void HejKarim()
+    {
+        Console.WriteLine("Hej Karim");
+    }
 }

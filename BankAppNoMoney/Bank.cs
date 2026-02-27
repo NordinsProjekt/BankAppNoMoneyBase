@@ -1,6 +1,8 @@
-﻿using BankAppNoMoney.Accounts;
-using BankAppNoMoney.Base;
+﻿using BankAppNoMoney.Base;
+using BankAppNoMoney.Factories;
 using BankAppNoMoney.Menu;
+using BankAppNoMoney.Models;
+using BankAppNoMoney.Types;
 
 namespace BankAppNoMoney;
 
@@ -15,6 +17,17 @@ internal class Bank
 #if DEBUG
         accounts = SeedDataService.GenerateAccounts();
 #endif
+        var account = accounts.Skip(2).FirstOrDefault();
+        if (account.Id is Guid ac)
+        {
+            ac.ToByteArray();
+
+
+
+        }
+
+        var hej = "2";
+        hej.TryParse(out Guid hejGuid);
     }
 
     internal void AddAccount(AccountBase account)
@@ -46,7 +59,7 @@ internal class Bank
             {
                 case 0:
                     choice = accountMenu.ShowMenu();
-                    AddAccount(CreateAccount(choice));
+                    CreateAccount(choice);
                     break;
                 case 1:
                     {
@@ -89,7 +102,7 @@ internal class Bank
         return accounts.Select(x => new string(x.AccountName + " " + x.AccountNumber)).ToList();
     }
 
-    private AccountBase CreateAccount(int selectedoption)
+    private void CreateAccount(int selectedoption)
     {
         Console.Clear();
         Console.Write("Namn på kontot: ");
@@ -99,14 +112,27 @@ internal class Bank
         var accountNumber = Console.ReadLine();
 
         Console.Write("Hur mycket ska kontot startas med?: ");
-        var validatedAmount = decimal.TryParse(Console.ReadLine(), out decimal initialAmount);
+        var validatedAmount = decimal.TryParse(Console.ReadLine(),
+            out decimal initialAmount);
 
-        return selectedoption switch
+        var accountDetails = new AccountDetails { AccountName = accountName, AccountNumber = accountNumber, StartingBalance = initialAmount, AccountType = (AccountType)selectedoption };
+
+        var account = AccountFactory.CreateAccount(accountDetails);
+        AddAccount(account);
+    }
+}
+
+public static class Hej
+{
+    public static void TryParse(string input, out Guid result)
+    {
+        if (Guid.TryParse(input, out Guid parsedGuid))
         {
-            0 => new BankAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
-            1 => new IskAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
-            2 => new UddevallaAccount(accountName ?? $"Defaultname{accounts.Count + 1}", accountNumber ?? $"Acc{accounts.Count + 1}", validatedAmount ? initialAmount : 0m),
-            _ => throw new NotImplementedException(),
-        };
+            result = parsedGuid;
+        }
+        else
+        {
+            result = Guid.Empty;
+        }
     }
 }
