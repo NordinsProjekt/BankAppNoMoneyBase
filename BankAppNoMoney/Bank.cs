@@ -10,7 +10,7 @@ internal class Bank
 {
     private List<AccountBase> accounts = new List<AccountBase>();
     private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Select account", "Exit"]);
-    private AccountMenu accountMenu = new("Account Menu", ["Bank account", "ISK account", "Uddevalla account"]);
+    private AccountMenu accountMenu = new("Account Menu", Enum.GetNames(typeof(AccountType)));
 
     internal Bank()
     {

@@ -18,6 +18,8 @@ internal static class AccountFactory
                                 accountDetails.AccountNumber, accountDetails.StartingBalance),
             AccountType.UddevallaAccount => new UddevallaAccount(accountDetails.AccountName,
                                 accountDetails.AccountNumber, accountDetails.StartingBalance),
+            AccountType.MillionAccount => new MillionAccount(accountDetails.AccountName, accountDetails.AccountNumber, accountDetails.StartingBalance),
+            AccountType.GoldAccount => new GoldAccount(accountDetails.AccountName, accountDetails.AccountNumber, accountDetails.StartingBalance),
             _ => throw new NotImplementedException(),
         };
     }
