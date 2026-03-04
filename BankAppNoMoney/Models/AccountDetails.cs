@@ -4,8 +4,8 @@ namespace BankAppNoMoney.Models;
 
 internal class AccountDetails
 {
-    internal string q { get; set; } = "";
-    internal string a { get; set; } = string.Empty;
-    internal decimal c { get; set; }
+    internal string AccountName { get; set; } = "";
+    internal string AccountNumber { get; set; } = string.Empty;
+    internal decimal StartingBalance { get; set; }
     internal AccountType AccountType { get; set; }
 }

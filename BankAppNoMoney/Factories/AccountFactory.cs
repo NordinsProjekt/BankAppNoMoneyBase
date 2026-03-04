@@ -1,13 +1,15 @@
 ﻿using BankAppNoMoney.Accounts;
 using BankAppNoMoney.Base;
+using BankAppNoMoney.Models;
 using BankAppNoMoney.Types;
 
 namespace BankAppNoMoney.Factories;
 
 internal static class AccountFactory
 {
-    internal static AccountBase CreateAccount(string name, string numbe)
+    internal static AccountBase CreateAccount(AccountDetails accountDetails)
     {
+
         return accountDetails.AccountType switch
         {
             AccountType.BankAccount => new BankAccount(accountDetails.AccountName,

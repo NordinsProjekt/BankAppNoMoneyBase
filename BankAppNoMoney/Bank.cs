@@ -17,17 +17,6 @@ internal class Bank
 #if DEBUG
         accounts = SeedDataService.GenerateAccounts();
 #endif
-        var account = accounts.Skip(2).FirstOrDefault();
-        if (account.Id is Guid ac)
-        {
-            ac.ToByteArray();
-
-
-
-        }
-
-        var hej = "2";
-        hej.TryParse(out Guid hejGuid);
     }
 
     internal void AddAccount(AccountBase account)
