@@ -1,9 +1,31 @@
-﻿namespace BankAppNoMoney;
+﻿using EFCore;
+using EFCore.Factories;
+using EFCore.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Services;
+using Services.Repositories;
 
-internal class Program
+namespace BankAppNoMoney;
+
+public class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        new Bank().ShowBankMenu();
+        var serviceProvider = BuildServiceProvider();
+        var bankService = serviceProvider.GetRequiredService<BankService>();
+
+        await new Bank(bankService).ShowBankMenu();
+    }
+
+    private static ServiceProvider BuildServiceProvider()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IDbContextFactory<BankContext>, BankContextFactory>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<BankService>();
+
+        return services.BuildServiceProvider();
     }
 }

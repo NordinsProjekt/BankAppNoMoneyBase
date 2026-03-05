@@ -1,44 +1,39 @@
-﻿using BankAppNoMoney.Base;
-using BankAppNoMoney.Factories;
-using BankAppNoMoney.Menu;
-using BankAppNoMoney.Models;
-using BankAppNoMoney.Types;
+﻿using Entities.Base;
+using Entities.Menu;
+using Entities.Types;
+using Services;
+using Services.Factories;
+using Services.Models;
 
 namespace BankAppNoMoney;
 
-internal class Bank
+public class Bank
 {
-    private List<AccountBase> accounts = new List<AccountBase>();
+    private readonly BankService _bankService;
     private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Select account", "Exit"]);
     private AccountMenu accountMenu = new("Account Menu", Enum.GetNames(typeof(AccountType)));
 
-    internal Bank()
+    public Bank(BankService bankService)
     {
-#if DEBUG
-        accounts = SeedDataService.GenerateAccounts();
-#endif
+        _bankService = bankService;
     }
 
-    internal void AddAccount(AccountBase account)
+    public async Task AddAccount(AccountBase account)
     {
-        accounts.Add(account);
+        await _bankService.AddAccountAsync(account);
     }
 
-    internal void RemoveAccount(Guid accountId)
+    public async Task RemoveAccount(Guid accountId)
     {
-        var account = accounts.FirstOrDefault(x => x.Id == accountId);
-        if (account != null)
-        {
-            accounts.Remove(account);
-        }
+        await _bankService.DeleteAccountAsync(accountId);
     }
 
-    internal List<AccountBase> GetAccounts()
+    private async Task<List<AccountBase>> GetAllAccounts()
     {
-        return accounts;
+        return await _bankService.GetAccountsAsync();
     }
 
-    internal void ShowBankMenu()
+    public async Task ShowBankMenu()
     {
         while (true)
         {
@@ -48,25 +43,25 @@ internal class Bank
             {
                 case 0:
                     choice = accountMenu.ShowMenu();
-                    CreateAccount(choice);
+                    await CreateAccount(choice);
                     break;
                 case 1:
                     {
-                        choice = new GenericAccountMenu("Delete account", GetAccountMenuStrings().ToArray()).ShowMenu();
-                        var account = accounts.Skip(choice).First();
-                        RemoveAccount(account.Id);
+                        choice = new GenericAccountMenu("Delete account", (await GetAccountMenuStrings()).ToArray()).ShowMenu();
+                        var account = (await GetAllAccounts()).Skip(choice).First();
+                        await RemoveAccount(account.Id);
                         break;
                     }
                 case 2:
-                    DisplayService.ShowAsTable("..:: Show accounts ::..", accounts);
+                    DisplayService.ShowAsTable("..:: Show accounts ::..", await _bankService.GetAccountsAsync());
                     Console.WriteLine("Press a key to continue");
                     Console.ReadKey();
                     break;
                 case 3:
                     {
-                        choice = new GenericAccountMenu("Select account", GetAccountMenuStrings().ToArray()).ShowMenu();
-                        var account = accounts.Skip(choice).First();
-                        ShowAccountDetails(account.Id);
+                        choice = new GenericAccountMenu("Select account", (await GetAccountMenuStrings()).ToArray()).ShowMenu();
+                        var account = (await _bankService.GetAccountsAsync()).Skip(choice).First();
+                        await ShowAccountDetails(account.Id);
                         break;
                     }
                 case 4:
@@ -77,21 +72,29 @@ internal class Bank
         }
     }
 
-    private void ShowAccountDetails(Guid id)
+    private async Task ShowAccountDetails(Guid id)
     {
-        var account = accounts.First(a => a.Id == id);
-        DisplayService.ShowAccountDetails(account);
-        account.ShowMenu(true);
+        var account = await _bankService.GetAccountByIdAsync(id);
+        if (account == null)
+        {
+            Console.WriteLine("Account not found");
+        }
+        else
+        {
+            DisplayService.ShowAccountDetails(account);
+            account.ShowMenu(true);
+        }
+
         Console.WriteLine("Press a key to continue");
         Console.ReadKey();
     }
 
-    private List<string> GetAccountMenuStrings()
+    private async Task<List<string>> GetAccountMenuStrings()
     {
-        return accounts.Select(x => new string(x.AccountName + " " + x.AccountNumber)).ToList();
+        return (await _bankService.GetAccountsAsync()).Select(x => new string(x.AccountName + " " + x.AccountNumber)).ToList();
     }
 
-    private void CreateAccount(int selectedoption)
+    private async Task CreateAccount(int selectedoption)
     {
         Console.Clear();
         Console.Write("Namn på kontot: ");
@@ -107,7 +110,7 @@ internal class Bank
         var accountDetails = new AccountDetails { AccountName = accountName, AccountNumber = accountNumber, StartingBalance = initialAmount, AccountType = (AccountType)selectedoption };
 
         var account = AccountFactory.CreateAccount(accountDetails);
-        AddAccount(account);
+        await AddAccount(account);
     }
 }
 

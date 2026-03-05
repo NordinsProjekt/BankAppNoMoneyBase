@@ -1,12 +1,12 @@
-﻿using BankAppNoMoney.Accounts;
-using BankAppNoMoney.Base;
-using BankAppNoMoney.Transactions;
+﻿using Entities.Accounts;
+using Entities.Base;
+using Entities.Transactions;
 
 namespace BankAppNoMoney;
 
-internal static class SeedDataService
+public static class SeedDataService
 {
-    internal static List<AccountBase> GenerateAccounts()
+    public static List<AccountBase> GenerateAccounts()
     {
         var accounts = new List<AccountBase>();
 

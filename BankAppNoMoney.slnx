@@ -1,4 +1,15 @@
 <Solution>
-  <Project Path="BankAppNoMoney/BankAppNoMoney.csproj" />
+  <Folder Name="/1. Domain/">
+    <Project Path="Entities/Entities.csproj" Id="cd556bf5-f609-463b-83dc-95327b6e91a4" />
+  </Folder>
+  <Folder Name="/2. Application/">
+    <Project Path="Services/Services.csproj" Id="c24d9f3f-6a69-41f7-817f-a754c3b9784c" />
+  </Folder>
+  <Folder Name="/3. Infrastructure/">
+    <Project Path="EFCore/EFCore.csproj" Id="e03e7fe5-d034-4dbd-84ea-3e1b2ba90b6e" />
+  </Folder>
+  <Folder Name="/4. Presentation/">
+    <Project Path="BankAppNoMoney/BankAppNoMoney.csproj" />
+  </Folder>
   <Project Path="BankTests/BankTests.csproj" Id="0fc13236-888f-409d-814e-c53f537d3c6e" />
 </Solution>
