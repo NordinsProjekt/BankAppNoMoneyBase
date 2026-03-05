@@ -1,30 +1,29 @@
-﻿using BankAppNoMoney.Base;
-using BankAppNoMoney.Factories;
-using BankAppNoMoney.Menu;
-using BankAppNoMoney.Models;
-using BankAppNoMoney.Types;
+﻿using BankAppNoMoney.Models;
+using DbEntities.Base;
+using DbEntities.Menu;
+using DbEntities.Types;
 
 namespace BankAppNoMoney;
 
-internal class Bank
+public class Bank
 {
     private List<AccountBase> accounts = new List<AccountBase>();
     private BankMenu bankMenu = new BankMenu("Bank Menu", ["Add account", "Remove account", "Show accounts", "Select account", "Exit"]);
     private AccountMenu accountMenu = new("Account Menu", Enum.GetNames(typeof(AccountType)));
 
-    internal Bank()
+    public Bank()
     {
 #if DEBUG
         accounts = SeedDataService.GenerateAccounts();
 #endif
     }
 
-    internal void AddAccount(AccountBase account)
+    public void AddAccount(AccountBase account)
     {
         accounts.Add(account);
     }
 
-    internal void RemoveAccount(Guid accountId)
+    public void RemoveAccount(Guid accountId)
     {
         var account = accounts.FirstOrDefault(x => x.Id == accountId);
         if (account != null)
@@ -33,12 +32,12 @@ internal class Bank
         }
     }
 
-    internal List<AccountBase> GetAccounts()
+    public List<AccountBase> GetAccounts()
     {
         return accounts;
     }
 
-    internal void ShowBankMenu()
+    public void ShowBankMenu()
     {
         while (true)
         {

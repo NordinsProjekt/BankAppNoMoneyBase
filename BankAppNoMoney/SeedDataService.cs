@@ -4,9 +4,9 @@ using BankAppNoMoney.Transactions;
 
 namespace BankAppNoMoney;
 
-internal static class SeedDataService
+public static class SeedDataService
 {
-    internal static List<AccountBase> GenerateAccounts()
+    public static List<AccountBase> GenerateAccounts()
     {
         var accounts = new List<AccountBase>();
 

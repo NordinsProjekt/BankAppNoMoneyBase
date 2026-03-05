@@ -4,9 +4,9 @@ using BankAppNoMoney.Transactions;
 
 namespace BankAppNoMoney;
 
-internal static class DisplayService
+public static class DisplayService
 {
-    internal static void ShowAsTable(string title, List<AccountBase> accounts)
+    public static void ShowAsTable(string title, List<AccountBase> accounts)
     {
         Console.Clear();
 
@@ -55,7 +55,7 @@ internal static class DisplayService
         Console.WriteLine(separator);
     }
 
-    internal static void ShowAccountDetails(AccountBase account)
+    public static void ShowAccountDetails(AccountBase account)
     {
         Console.Clear();
 

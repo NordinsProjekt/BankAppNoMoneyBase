@@ -1,4 +1,17 @@
 <Solution>
-  <Project Path="BankAppNoMoney/BankAppNoMoney.csproj" />
-  <Project Path="BankTests/BankTests.csproj" Id="0fc13236-888f-409d-814e-c53f537d3c6e" />
+  <Folder Name="/1. Domain/">
+    <Project Path="DbEntities/DbEntities.csproj" Id="1245ee05-9721-4e36-bc4b-ccd0aea9be16" />
+  </Folder>
+  <Folder Name="/2. Application/">
+    <Project Path="AppServices/AppServices.csproj" Id="40b61b7f-d6ad-4df4-872a-0b3e657d8d2f" />
+  </Folder>
+  <Folder Name="/3. Infrastructure/">
+    <Project Path="EF_SQL/EF_SQL.csproj" Id="2db92303-1db1-419b-8fb8-48be1d2cdc56" />
+  </Folder>
+  <Folder Name="/4. Presentation/">
+    <Project Path="BankAppNoMoney/BankAppNoMoney.csproj" />
+  </Folder>
+  <Folder Name="/5. Tests/">
+    <Project Path="BankTests/BankTests.csproj" Id="0fc13236-888f-409d-814e-c53f537d3c6e" />
+  </Folder>
 </Solution>
