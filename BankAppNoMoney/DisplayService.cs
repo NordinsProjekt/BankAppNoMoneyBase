@@ -1,4 +1,4 @@
-﻿using BankAppNoMoney.Accounts;
+﻿sing BankAppNoMoney.Accounts;
 using BankAppNoMoney.Base;
 using BankAppNoMoney.Transactions;
 

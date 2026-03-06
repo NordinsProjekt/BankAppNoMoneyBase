@@ -1,4 +1,4 @@
-﻿using BankAppNoMoney.Accounts;
+﻿using Entities.Accounts;
 
 namespace BankTests.Bases;
 
